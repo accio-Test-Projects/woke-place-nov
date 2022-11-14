@@ -1,18 +1,3 @@
-// landing page "/"
-// auth page "/auth"
-
-// {
-// candidateOnboarding page "/candidateOnboarding"
-// employerOnboarding page "/employerOnboarding"
-// employerProfile page "/employerProfile"
-// candidateProfile page "/candidateProfile"
-// empoyerJobs page "/employerJobs"
-// candidateJobs page "/candidateJobs"
-// application page "/application"
-// applicants page "/applicants"
-// employerConversation page "/employerConversation"
-// candidateConversation page "/candidateConversation"
-// }
 import {
   Routes,
   Route,
@@ -56,10 +41,12 @@ function Navs() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/candidate/auth" element={<AuthPage type='candidate' />} />
+        <Route path="/employer/auth" element={<AuthPage type='employer' />} />
+
         <Route element={<CandidateProtactedRoutes />}>
           <Route
-            path="/candidateOnboarding"
+            path="/candidate/onboarding"
             element={<CandidateOnboarding />}
           />
           <Route path="candidate/profile" element={<CandidateProfile />} />

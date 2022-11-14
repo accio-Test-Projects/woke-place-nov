@@ -13,11 +13,13 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import Logo from '../../assets/logo2.png'
+import { useNavigate } from "react-router-dom";
 import "./NavBar.css";
-const pages = ["Find a job","find a candidate"];
+const pages = [{label:"Find a job",path:'candidate/auth'},{label:"find a candidate",path:'employer/auth'}];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavBar() {
+  const navigate=useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -29,12 +31,17 @@ function NavBar() {
   };
 
   const handleCloseNavMenu = () => {
+
     setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const navigatetopage = (path) => {
+    navigate(path);
+  }
 
   return (
     <AppBar className="container" position="static">
@@ -89,8 +96,8 @@ function NavBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page} onClick={()=>navigatetopage(page.path)}>
+                  <Typography textAlign="center">{page.label}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -118,10 +125,10 @@ function NavBar() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={()=>navigatetopage(page.path)}
                 sx={{ my: 2, color: "black", display: "block" }}
               >
-                {page}
+                {page.label}
               </Button>
             ))}
           </Box>
