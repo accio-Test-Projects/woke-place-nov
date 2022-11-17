@@ -15,8 +15,11 @@ function Jobs() {
     jobType: "",
     domain: "",
   });
+
   const selectAJob = (data) => {
+
     setMobileSidebar(false);
+    
     if (!data) {
       setJobData({
         title: "",
@@ -27,17 +30,18 @@ function Jobs() {
         skills: [],
         jobType: "",
         domain: "",
-      })
+      });
       setPostAjob(true);
     } else {
       setJobData(data);
       setPostAjob(true);
     }
   };
+
+
   return (
     <>
       <Grid container spacing={2}>
-
         <Grid
           item
           xs={12}
@@ -57,11 +61,13 @@ function Jobs() {
           }}
         >
           <Button
-          sx={{
-            display: { xs: "block", sm: "none" },
-          }}
-          onClick={()=>setMobileSidebar(true)}
-          >Back</Button>
+            sx={{
+              display: { xs: "block", sm: "none" },
+            }}
+            onClick={() => setMobileSidebar(true)}
+          >
+            Back
+          </Button>
 
           <Jobform
             jobData={jobData}

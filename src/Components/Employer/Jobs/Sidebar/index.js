@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
-import { Grid,Button } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 
-function Sidebar({selectAJob}) {
+function Sidebar({ selectAJob }) {
   const [allJobs, setAllJobs] = useState(null);
   const fetchJobs = async () => {
     const userInfo = JSON.parse(localStorage.getItem("user"));
     const employerId = userInfo.uid;
+
     try {
       const q = await query(
         collection(db, "jobsData"),
-        where("employerId", "==", employerId)
+        where("employerId", "==", employerId),
       );
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -31,18 +32,17 @@ function Sidebar({selectAJob}) {
   useEffect(() => {
     fetchJobs();
   }, []);
+
   return (
     <div>
-      <Button 
-      onClick={()=>selectAJob()}
-      >post a job</Button>
+      <Button onClick={() => selectAJob(null)}>post a job</Button>
       {allJobs && allJobs.length > 0 ? (
         <div>
           {" "}
           {allJobs.map((job) => {
             return (
               <Grid
-              onClick={()=>selectAJob(job)}
+                onClick={() => selectAJob(job)}
                 key={job.Job_id}
                 sx={{
                   padding: "10px",

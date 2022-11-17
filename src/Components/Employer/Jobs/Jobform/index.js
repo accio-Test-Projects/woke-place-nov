@@ -85,25 +85,34 @@ function Jobform({ postAjob, jobData, setJobData }) {
 
   const submitJob = async (e) => {
     e.preventDefault();
+
     const Job_id = uuidv4();
+
     try {
-      if (jobData.Job_id) {
+      if (jobData.Job_id) {  //update
+        
         await setDoc(doc(db, "jobsData", jobData.Job_id), {
           ...jobData,
         });
-      } else {
-        await setDoc(doc(db, "jobsData", Job_id), {
+        //setDoc(doc,data)
+        // doc (db,'collection_name','doc_id')
+      } else { //create
+
+        await setDoc(doc(db, "jobsData", Job_id),
+        {
           Job_id: Job_id,
           ...jobData,
           employerId: userInfo.uid,
           createdAt: new Date(),
-        });
+        }
+        );
       }
       alert("Job Posted Successfully");
     } catch (err) {
       console.log(err);
     }
   };
+
 
   return postAjob ? (
     <form onSubmit={(e)=>submitJob(e)} >
