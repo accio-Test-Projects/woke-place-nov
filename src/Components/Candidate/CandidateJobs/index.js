@@ -45,21 +45,22 @@ function CandidateJobs() {
     // status
     const applicationId = uuidv4();
     // console.log(job, "job");
-
-    //  fetch the applications with candidate id
+    //  fetch the applications with candidate id 
     //  if job id is present in the applications then shw alert already applied
-    //else apply for the job
+    // else apply for the job
+
     const q = await query(
       collection(db, "applications"),
       where("candidateId", "==", userInfo.uid)
     );
-    let data = [];
+    let data = []; // will have all the applications of the candidate with candidate id
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
 
       data.push(doc.data());
     });
+
     const isApplied = data.find((item) => item.jobId === job.Job_id);
 
     if (isApplied) {
@@ -76,6 +77,10 @@ function CandidateJobs() {
           createdAt: new Date(),
           candidateId: userInfo.uid,
           status: "applied",
+          candidate_name:userInfo.displayName,
+          company_name:job.employer_name,
+          candidate_email:userInfo.email,
+          // candidate_experience:userInfo.experience,
         });
 
         alert("applied sucessfully");
