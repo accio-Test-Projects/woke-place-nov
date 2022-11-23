@@ -21,7 +21,6 @@ function Conversation() {
   const [allConversations, setAllConversations] = useState(null);
   const userInfo = JSON.parse(localStorage.getItem("user"));
   const selectAConversation = async (data) => {
-    console.log(data);
     setSelectConversation(data);
     
     const q = query(

@@ -17,13 +17,39 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-
-const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+import SmsIcon from "@mui/icons-material/Sms";
+import BackupTableIcon from "@mui/icons-material/BackupTable";
+import Person4Icon from "@mui/icons-material/Person4";
+import WorkIcon from "@mui/icons-material/Work";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebaseConfig";
+const pages = [
+  {
+    label: "Profile",
+    key: "profile",
+    icon: <Person4Icon />,
+  },
+  {
+    label: "Jobs",
+    key: "jobs",
+    icon: <WorkIcon />,
+  },
+  {
+    label: "Applications",
+    key: "application",
+    icon: <BackupTableIcon />,
+  },
+  {
+    label: "conversation",
+    key: "conversation",
+    icon: <SmsIcon />,
+  },
+];
 
 function CandidateHoc({ children }) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const navigate = useNavigate();
   const [value, setValue] = React.useState(0);
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -38,6 +64,16 @@ function CandidateHoc({ children }) {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const reRoute = (page) => {
+    handleCloseNavMenu();
+    navigate(`/candidate/${page}`);
+  };
+  const LogoutFun = () => {
+    localStorage.clear();
+    auth.signOut();
+    navigate("/");
   };
 
   return (
@@ -99,8 +135,8 @@ function CandidateHoc({ children }) {
                   }}
                 >
                   {pages.map((page) => (
-                    <MenuItem key={page} onClick={handleCloseNavMenu}>
-                      <Typography textAlign="center">{page}</Typography>
+                    <MenuItem key={page.key} onClick={() => reRoute(page.key)}>
+                      <Typography textAlign="center">{page.label}</Typography>
                     </MenuItem>
                   ))}
                 </Menu>
@@ -126,47 +162,23 @@ function CandidateHoc({ children }) {
               </Typography>
               <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
                 {pages.map((page) => (
-                  <Button
-                    key={page}
-                    onClick={handleCloseNavMenu}
-                    sx={{ my: 2, color: "white", display: "block" }}
-                  >
-                    {page}
-                  </Button>
+                  <MenuItem key={page.key} onClick={() => reRoute(page.key)}>
+                    <Typography textAlign="center">{page.label}</Typography>
+                  </MenuItem>
                 ))}
               </Box>
 
               <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar
-                      alt="Remy Sharp"
-                      src="/static/images/avatar/2.jpg"
-                    />
-                  </IconButton>
+                <Tooltip title="logout">
+                  <Button
+                    sx={{
+                      color: "#fff",
+                    }}
+                    onClick={LogoutFun}
+                  >
+                    Logout
+                  </Button>
                 </Tooltip>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{setting}</Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
               </Box>
             </Toolbar>
           </Container>
@@ -184,7 +196,7 @@ function CandidateHoc({ children }) {
           zIndex: "2",
         }}
       >
-        <Box >
+        <Box>
           <BottomNavigation
             showLabels
             value={value}
@@ -192,9 +204,16 @@ function CandidateHoc({ children }) {
               setValue(newValue);
             }}
           >
-            <BottomNavigationAction label="Recents" icon={<RestoreIcon />} />
-            <BottomNavigationAction label="Favorites" icon={<FavoriteIcon />} />
-            <BottomNavigationAction label="Nearby" icon={<LocationOnIcon />} />
+            {pages.map((page) => {
+              return (
+                <BottomNavigationAction
+                  key={page.key}
+                  onClick={() => reRoute(page.key)}
+                  label={page.label}
+                  icon={page.icon}
+                />
+              );
+            })}
           </BottomNavigation>
         </Box>
       </Box>

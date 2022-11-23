@@ -22,8 +22,10 @@ import CandidateHoc from "../Components/HOC/CandidateHoc";
 import EmployerHoc from "../Components/HOC/EmployerHoc";
 
 function Navs() {
+  const user=JSON.parse(localStorage.getItem('user'))||null
+  const userinfo=JSON.parse(localStorage.getItem('userinfo'))||null
   const CandidateProtactedRoutes = () => {
-    if ("a" === "a") {
+    if (user&&userinfo?.type==='candidate') {
       return <Outlet />;
     } else {
       return <Navigate to="/" />;
@@ -31,7 +33,7 @@ function Navs() {
   };
 
   const EmployerProtactedRoutes = () => {
-    if ("a" === "a") {
+    if (user&&userinfo?.type==='employer') {
       return <Outlet />;
     } else {
       return <Navigate to="/" />;
@@ -44,12 +46,12 @@ function Navs() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/candidate/auth" element={<AuthPage type="candidate" />} />
         <Route path="/employer/auth" element={<AuthPage type="employer" />} />
-
-        <Route element={<CandidateProtactedRoutes />}>
-          <Route
+        <Route
             path="/candidate/onboarding"
             element={<CandidateOnboarding />}
           />
+        <Route element={<CandidateProtactedRoutes />}>
+
           <Route
             path="candidate/profile"
             element={
@@ -83,8 +85,9 @@ function Navs() {
             }
           />
         </Route>
+        <Route path="/employer/onboarding" element={<EmployerOnboarding />} />
         <Route element={<EmployerProtactedRoutes />}>
-          <Route path="/employer/onboarding" element={<EmployerOnboarding />} />
+
           <Route
             path="employer/profile"
             element={

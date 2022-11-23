@@ -1,36 +1,65 @@
 import { Button } from "@mui/material";
 import React from "react";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "../../firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../../firebaseConfig";
+
 import { useNavigate } from "react-router-dom";
 function AuthPage({ type }) {
   const navigate = useNavigate();
   const signIn = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-      .then((result) => {
+      .then(async (result) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
         // The signed-in user info.
         const user = result.user;
         console.log(user);
         localStorage.setItem("user", JSON.stringify(user));
-        if (type === "candidate") {
-          if (!true) {
-            // if user is registered
-            navigate("/candidate/profile");
+        const docRef = doc(db, "userData", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const userInfo=docSnap.data()
+          const userType = userInfo.type;
+          localStorage.setItem('userinfo',JSON.stringify(userInfo))
+
+          if (type === "candidate") {
+            if (userType === type) {
+
+              setTimeout(()=>{
+                navigate("/candidate/profile");
+              },3000)
+            
+
+            } else {
+              alert("you are already onboarded as employer");
+              return;
+            }
           } else {
-            // if user is not registered
-            navigate("/candidate/onboarding");
+            if (userType === type) {
+              setTimeout(()=>{
+              navigate("/employer/profile");
+              },3000)
+            } else {
+              alert("you are already onboarded as candidate");
+              return;
+            }
           }
+          console.log("Document data:", docSnap.data());
         } else {
-          if (!true) {
-            // if user is registered
-            navigate("/employer/profile");
+
+          if (type === "candidate") {
+            setTimeout(()=>{
+            navigate("/candidate/onboarding");
+            },3000)
           } else {
-            // if user is not registered
+            setTimeout(()=>{
             navigate("/employer/onboarding");
+            },3000)
           }
         }
+
         // ...
       })
       .catch((error) => {
