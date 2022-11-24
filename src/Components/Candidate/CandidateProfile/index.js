@@ -10,11 +10,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { useTheme } from "@mui/material/styles";
-
+import {DarkmodeContext} from "../../context/Darkmode";
 const domains = [
   "Frontend",
   "Backend",
@@ -68,6 +68,7 @@ function CandidateProfile() {
   const userData = JSON.parse(localStorage.getItem("user"));
   const [edit, setEdit] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
+  const [state,dispatch] = React.useContext(DarkmodeContext);
   const [userInfo, setUserInfo] = React.useState({
     name: "",
     email: "",
@@ -77,7 +78,7 @@ function CandidateProfile() {
     address: "",
   });
 
-  async function fetchUserInfo() {
+  const fetchUserInfo = useCallback(async () => {
     try {
       const docRef = doc(db, "userData", userData.uid);
       const docSnap = await getDoc(docRef);
@@ -92,13 +93,13 @@ function CandidateProfile() {
     } catch (err) {
       console.log(err);
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchUserInfo();
   }, []);
 
-  const handleSkillChange = (event) => {
+  const handleSkillChange = useCallback((event) => {
     const {
       target: { value },
     } = event;
@@ -106,8 +107,8 @@ function CandidateProfile() {
       ...userInfo,
       skills: typeof value === "string" ? value.split(",") : value,
     });
-  };
-  const saveInfo = async () => {
+  }, [userInfo]);
+  const saveInfo = useCallback(async () => {
     try {
       await setDoc(
         doc(db, "userData", userData.uid),
@@ -121,7 +122,9 @@ function CandidateProfile() {
     } catch (err) {
       console.log(err);
     }
-  };
+  }, []);
+
+
   return (
     <div>
       {loading ? (
@@ -136,7 +139,7 @@ function CandidateProfile() {
               padding: "10px",
               maxWidth: "95%",
               margin: "20px auto",
-              backgroundColor: "#fff",
+              backgroundColor: state.darkMode ? "#1e1e1e" : "#fff",
               boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.15)",
               borderRadius: "8px",
             }}
@@ -287,4 +290,4 @@ function CandidateProfile() {
   );
 }
 
-export default CandidateProfile;
+export default React.memo(CandidateProfile);

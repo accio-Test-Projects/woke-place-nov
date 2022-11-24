@@ -20,7 +20,9 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigate } from "react-router-dom";
+import {DarkmodeContext} from "../context/Darkmode";
 import { auth } from "../../firebaseConfig";
+import { Switch } from "@mui/material";
 const pages = [
   {
     label: "Profile",
@@ -34,12 +36,12 @@ const pages = [
   },
   {
     label: "Applicants",
-    key:'applicants',
+    key: 'applicants',
     icon: <BackupTableIcon />,
   },
   {
     label: "conversation",
-    key:'conversation',
+    key: 'conversation',
     icon: <SmsIcon />,
   },
 ];
@@ -47,6 +49,7 @@ const pages = [
 function EmployerHoc({ children }) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [state,dispatch] = React.useContext(DarkmodeContext);
   const navigate = useNavigate();
   const [value, setValue] = React.useState(0);
   const handleOpenNavMenu = (event) => {
@@ -82,7 +85,13 @@ function EmployerHoc({ children }) {
         }}
       >
         <AppBar position="static">
-          <Container maxWidth="xl">
+          <Container
+
+            sx={{
+              backgroundColor: state.darkMode ? "#1a1a1a" : "#fff",
+            }}
+
+            maxWidth="xl">
             <Toolbar disableGutters>
               <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
               <Typography
@@ -134,7 +143,11 @@ function EmployerHoc({ children }) {
                 >
                   {pages.map((page) => (
                     <MenuItem key={page.key} onClick={() => reRoute(page.key)}>
-                      <Typography textAlign="center">{page.label}</Typography>
+                      <Typography
+                        sx={{
+                          color: state.darkMode ? "#fff" : "#000",
+                        }}
+                        textAlign="center">{page.label}</Typography>
                     </MenuItem>
                   ))}
                 </Menu>
@@ -167,10 +180,19 @@ function EmployerHoc({ children }) {
               </Box>
 
               <Box sx={{ flexGrow: 0 }}>
+                <Tooltip title="toggle">
+                  <Switch
+                     checked={state.darkMode}
+                     onChange={() => {
+                       state.darkMode ? dispatch({ type: 'Make_light' }) :
+                       dispatch({ type: "Make_dark" })
+                     }}
+                  />
+                </Tooltip>
                 <Tooltip title="logout">
                   <Button
                     sx={{
-                      color: "#fff",
+                      color: state.darkMode ? "#fff" : "#000",
                     }}
                     onClick={LogoutFun}
                   >

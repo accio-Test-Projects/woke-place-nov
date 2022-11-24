@@ -1,6 +1,6 @@
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
-import {Box,Switch} from "@mui/material";
+import { Box, Switch } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
@@ -15,14 +15,20 @@ import AdbIcon from "@mui/icons-material/Adb";
 import Logo from '../../assets/logo2.png'
 import { useNavigate } from "react-router-dom";
 import "./NavBar.css";
-const pages = [{label:"Find a job",path:'candidate/auth'},{label:"find a candidate",path:'employer/auth'}];
+import { DarkmodeContext } from '../context/Darkmode';
+
+const pages = [{ label: "Find a job", path: 'candidate/auth' }, { label: "find a candidate", path: 'employer/auth' }];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
+
 function NavBar() {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
+  const [state, dispatch] = React.useContext(DarkmodeContext);
+
+  console.log(state);
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -44,8 +50,14 @@ function NavBar() {
   }
 
   return (
-    <AppBar className="container" position="static">
-      <Container maxWidth="xl">
+    <AppBar
+
+      className="container" position="static">
+      <Container
+        sx={{
+          backgroundColor: state.darkMode ? "#1a1a1a" : "#fff",
+        }}
+        maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Typography
@@ -59,11 +71,11 @@ function NavBar() {
               fontFamily: "monospace",
               fontWeight: 700,
               letterSpacing: ".3rem",
-            
+
               textDecoration: "none",
             }}
           >
-            <img src={Logo} alt="logo" style={{width:"100px"}}/>
+            <img src={Logo} alt="logo" style={{ width: "100px" }} />
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -73,7 +85,9 @@ function NavBar() {
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-            
+              sx={{
+                color: state.darkMode ? "#fff" : "#000",
+              }}
             >
               <MenuIcon />
             </IconButton>
@@ -96,8 +110,13 @@ function NavBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={()=>navigatetopage(page.path)}>
-                  <Typography textAlign="center">{page.label}</Typography>
+                <MenuItem key={page} onClick={() => navigatetopage(page.path)}>
+                  <Typography
+                    sx={{
+                      color: state.darkMode ? "#fff" : "#000",
+                    }}
+
+                    textAlign="center">{page.label}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -115,18 +134,21 @@ function NavBar() {
               fontFamily: "monospace",
               fontWeight: 700,
               letterSpacing: ".3rem",
-            
+
               textDecoration: "none",
             }}
           >
-            <img src={Logo} alt="logo" style={{width:"100px"}}/>
+            <img src={Logo} alt="logo" style={{ width: "100px" }} />
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={()=>navigatetopage(page.path)}
-                sx={{ my: 2, color: "black", display: "block" }}
+                onClick={() => navigatetopage(page.path)}
+                sx={{
+                  my: 2, color: state.darkMode ? "#fff" : "#000"
+                  , display: "block"
+                }}
               >
                 {page.label}
               </Button>
@@ -135,7 +157,13 @@ function NavBar() {
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
-            <Switch  defaultChecked />
+              <Switch
+                checked={state.darkMode}
+                onChange={() => {
+                  state.darkMode ? dispatch({ type: 'Make_light' }) :
+                  dispatch({ type: "Make_dark" })
+                }}
+              />
             </Tooltip>
             <Menu
               sx={{ mt: "45px" }}
