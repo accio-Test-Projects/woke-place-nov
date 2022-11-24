@@ -1,11 +1,14 @@
 import { Button } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebaseConfig";
-
+import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 function AuthPage({ type }) {
+
+  const [state, dispatch] = useContext(UserContext);
+
   const navigate = useNavigate();
   const signIn = () => {
     const provider = new GoogleAuthProvider();
@@ -15,32 +18,29 @@ function AuthPage({ type }) {
         // The signed-in user info.
         const user = result.user;
         console.log(user);
-        localStorage.setItem("user", JSON.stringify(user));
+        // localStorage.setItem("user", JSON.stringify(user));
+        dispatch({ type: "SET_USER", payload: user });
         const docRef = doc(db, "userData", user.uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          const userInfo=docSnap.data()
+          const userInfo = docSnap.data()
           const userType = userInfo.type;
-          localStorage.setItem('userinfo',JSON.stringify(userInfo))
+          // localStorage.setItem('userinfo',JSON.stringify(userInfo))
+          dispatch({ type: "SET_USER_INFO", payload: userInfo })
 
           if (type === "candidate") {
             if (userType === type) {
-
-              setTimeout(()=>{
-                navigate("/candidate/profile");
-              },3000)
-            
-
+              navigate("/candidate/profile");
             } else {
               alert("you are already onboarded as employer");
               return;
             }
           } else {
             if (userType === type) {
-              setTimeout(()=>{
+
               navigate("/employer/profile");
-              },3000)
+
             } else {
               alert("you are already onboarded as candidate");
               return;
@@ -50,13 +50,13 @@ function AuthPage({ type }) {
         } else {
 
           if (type === "candidate") {
-            setTimeout(()=>{
+
             navigate("/candidate/onboarding");
-            },3000)
+
           } else {
-            setTimeout(()=>{
+
             navigate("/employer/onboarding");
-            },3000)
+
           }
         }
 

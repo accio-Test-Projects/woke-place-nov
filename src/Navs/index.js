@@ -5,7 +5,7 @@ import {
   Outlet,
   Navigate,
 } from "react-router-dom";
-import React from "react";
+import React,{useContext} from "react";
 import LandingPage from "../Components/LandingPage";
 import AuthPage from "../Components/AuthPage";
 import CandidateOnboarding from "../Components/Candidate/CandidateOnboarding";
@@ -20,12 +20,12 @@ import EmployerConversation from "../Components/Employer/Conversation";
 import Applicants from "../Components/Employer/Applicants";
 import CandidateHoc from "../Components/HOC/CandidateHoc";
 import EmployerHoc from "../Components/HOC/EmployerHoc";
+import { UserContext } from "../Components/context/UserContext";
 
 function Navs() {
-  const user=JSON.parse(localStorage.getItem('user'))||null
-  const userinfo=JSON.parse(localStorage.getItem('userinfo'))||null
+  const [state] = useContext(UserContext);
   const CandidateProtactedRoutes = () => {
-    if (user&&userinfo?.type==='candidate') {
+    if (state.user&&state.userInfo?.type==='candidate') {
       return <Outlet />;
     } else {
       return <Navigate to="/" />;
@@ -33,7 +33,7 @@ function Navs() {
   };
 
   const EmployerProtactedRoutes = () => {
-    if (user&&userinfo?.type==='employer') {
+    if (state.user&&state.userInfo?.type==='employer') {
       return <Outlet />;
     } else {
       return <Navigate to="/" />;
