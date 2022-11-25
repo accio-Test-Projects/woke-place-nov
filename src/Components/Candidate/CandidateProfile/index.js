@@ -14,7 +14,9 @@ import React, { useCallback, useEffect } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { useTheme } from "@mui/material/styles";
-import {DarkmodeContext} from "../../context/Darkmode";
+import { DarkmodeContext } from "../../context/Darkmode";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage"
+import { storage } from "../../../firebaseConfig"
 const domains = [
   "Frontend",
   "Backend",
@@ -68,7 +70,7 @@ function CandidateProfile() {
   const userData = JSON.parse(localStorage.getItem("user"));
   const [edit, setEdit] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
-  const [state,dispatch] = React.useContext(DarkmodeContext);
+  const [state, dispatch] = React.useContext(DarkmodeContext);
   const [userInfo, setUserInfo] = React.useState({
     name: "",
     email: "",
@@ -76,6 +78,7 @@ function CandidateProfile() {
     skills: [],
     domain: "",
     address: "",
+    resume: "",
   });
 
   const fetchUserInfo = useCallback(async () => {
@@ -108,7 +111,8 @@ function CandidateProfile() {
       skills: typeof value === "string" ? value.split(",") : value,
     });
   }, [userInfo]);
-  const saveInfo = useCallback(async () => {
+  const saveInfo = async () => {
+    console.log(userInfo);
     try {
       await setDoc(
         doc(db, "userData", userData.uid),
@@ -122,7 +126,45 @@ function CandidateProfile() {
     } catch (err) {
       console.log(err);
     }
-  }, []);
+  }
+
+  const [pdfurl, setPdfurl] = React.useState("");
+  const [progresspercent, setProgresspercent] = React.useState(0);
+  const submitFile = (e) => {
+    e.preventDefault()
+    console.log(e.target[0].files[0])
+    const file = e.target[0]?.files[0]
+
+    if (!file) return;
+
+    const storageRef = ref(storage, `resume/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on("state_changed",
+      (snapshot) => {
+        const progress =
+          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setProgresspercent(progress);
+      },
+      (error) => {
+        alert(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).
+          then((downloadURL) => {
+            setPdfurl(downloadURL)
+            console.log(downloadURL, 'url')
+            setUserInfo({
+              ...userInfo,
+              resume: downloadURL
+            })
+            setProgresspercent(0)
+          });
+      }
+    );
+
+  }
+
 
 
   return (
@@ -130,7 +172,7 @@ function CandidateProfile() {
       {loading ? (
         <div>Loading...</div>
       ) : (
-        <form>
+        <div>
           <h1>Profile</h1>
           <Grid
             container
@@ -267,6 +309,20 @@ function CandidateProfile() {
                 </Select>
               </FormControl>
             </Grid>
+            <Grid item xs={6}>
+              {edit ? (<form onSubmit={submitFile} >
+                <input
+                  accept="application/pdf"
+                  type="file"
+                />
+                {progresspercent > 0 && progresspercent <= 100 ? (<div>{progresspercent}</div>) : (<Button
+                  type="submit"
+                >Upload</Button>)}
+              </form>) : ((userInfo.resume ? (<Button
+                onClick={() => window.open(userInfo.resume, "_blank")}
+              >View resume</Button>) : (<div>upload resume</div>)))}
+            </Grid>
+
             <Grid item xs={12}>
               {edit ? (
                 <div>
@@ -284,7 +340,7 @@ function CandidateProfile() {
               )}
             </Grid>
           </Grid>
-        </form>
+        </div>
       )}
     </div>
   );
