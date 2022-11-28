@@ -174,7 +174,11 @@ function EmployerHoc({ children }) {
               <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
                 {pages.map((page) => (
                   <MenuItem key={page.key} onClick={() => reRoute(page.key)}>
-                    <Typography textAlign="center">{page.label}</Typography>
+                    <Typography
+                      sx={{
+                        color: state.darkMode ? "#fff" : "#000",
+                      }}
+                     textAlign="center">{page.label}</Typography>
                   </MenuItem>
                 ))}
               </Box>

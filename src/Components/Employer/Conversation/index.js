@@ -108,7 +108,11 @@ function Conversation() {
           display: { xs: lastMassageMobile ? "none" : "block", sm: "block" },
         }}
       >
-        <Button onClick={() => setLastMassageMobile(true)}>back</Button>
+        <Button
+        sx={{
+          display:{xs:'block',sm:'none'}
+        }}
+        onClick={() => setLastMassageMobile(true)}>back</Button>
         <MessageArea 
         postMessage={postMessage}
         allConversations={allConversations}
